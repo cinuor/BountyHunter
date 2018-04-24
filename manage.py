@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-#import sys, os
-#print(os.path.abspath(__file__))
-#print(os.path.dirname(os.path.abspath(__file__)))
-#sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app import create_app
 from config import config
+from app.models import db
 
 
 if __name__ == '__main__':
     
     myapp = create_app("default", config)
+    with myapp.app_context():
+        db.init_app(myapp)
+        db.create_all()
 
     myapp.run()
