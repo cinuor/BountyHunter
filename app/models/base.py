@@ -18,4 +18,3 @@ class BaseModel(object):
 
     def commit(self):
         db.session.commit()
-
