@@ -39,3 +39,17 @@ class Agency(db.Model, BaseModel):
 
     def __repr__(self):
         return '<Agency %r>' % self.name
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'fullname': self.fullname,
+            'nickname': self.nickname,
+            'website': self.website,
+            'capitalType': self.capitalType,
+            'capitalProperty': self.capitalProperty,
+            'stageProperty': self.stageProperty,
+            'upperLimit': self.upperLimit,
+            'lowerLimit': self.lowerLimit
+            }
