@@ -3,7 +3,8 @@ import uuid, json
 from .encrypt import *
 
 def generate_uuid():
-    return uuid.uuid4()
+    id = uuid.uuid4()
+    return str(id)
 
 def get_post_data(request):
     data = getattr(request, 'data', None)

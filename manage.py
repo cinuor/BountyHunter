@@ -10,6 +10,7 @@ if __name__ == '__main__':
     myapp = create_app("default", config)
     with myapp.app_context():
         db.init_app(myapp)
+        #db.drop_all()
         db.create_all()
 
     myapp.run()

@@ -1,11 +1,13 @@
 # -*- coding: UTF-8 -*-
 from flask import Flask, jsonify
 from app.auth import authbp
+from app.agency import agencybp
 from app import error, utils
 
 def create_app(config_name, config):
     app = Flask(__name__)
     app.register_blueprint(authbp)
+    app.register_blueprint(agencybp)
     app.config.from_object(config[config_name])
     register_errorhandler(app)
     return app

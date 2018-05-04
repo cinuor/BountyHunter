@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+
+from ..models import db
+from .base import BaseModel
+from .agency import Agency
+from .round import Round
+from .. import utils
+
+class AgencyRound(db.Model, BaseModel):
+
+    __tablename__ = 'agencyround'
+
+    id = db.Column(db.String(36), primary_key=True)
+    agencyId = db.Column(db.String(36), db.ForeignKey('Agency.id'))
+    roundId = db.Column(db.String(36), db.ForeignKey('Round.id'))
+
+    def __init__(self, agencyId, roundId):
+        self.id = utils.generate_uuid()
+        self.agencyId = agencyId
+        self.roundId = roundId
+
+    def __repr__(self):
+        return '<agency:round %r:%r>' % (self.agencyId, self.roundId)
