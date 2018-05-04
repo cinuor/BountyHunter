@@ -5,7 +5,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://dev:bountyhunter@127.0.0.1/dev'
+    SQLALCHEMY_DATABASE_URI = 'mysql://dev:bountyhunter@127.0.0.1/dev?charset=utf8mb4'
 
 class TestConfig(Config):
     TESTING = True
