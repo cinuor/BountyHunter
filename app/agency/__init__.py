@@ -9,4 +9,4 @@ from .agency import *
 
 agency_api = Api(agencybp)
 agency_api.add_resource(AgenciesResource, '/agencies')
-agency_api.add_resource(AgencyResource, '/agencies/<id>')
+agency_api.add_resource(AgencyResource, '/agencies/<string:id>')

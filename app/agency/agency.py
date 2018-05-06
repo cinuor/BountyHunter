@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import json
 from flask import request, jsonify
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 from ..error import *
-from ..models import Agency
+from ..models import Agency, Round
 from .. import utils
 
 class AgencyResource(Resource):
@@ -39,7 +40,23 @@ class AgencyResource(Resource):
          
 
 class AgenciesResource(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('industry', type=str, action='append')
+    parser.add_argument('segindustry', type=str, action='append')
+    parser.add_argument('capitalType', type=str, action='append')
+    parser.add_argument('capitalProperty', type=str, action='append')
+    parser.add_argument('stageProperty', type=str, action='append')
+    parser.add_argument('investStage', type=str, action='append')
+    parser.add_argument('round', type=str, action='append')
+    parser.add_argument('currency', type=str, action='append')
+    parser.add_argument('area', type=str, action='append')
+    parser.add_argument('investCount', type=str, action='append')
+    parser.add_argument('tag', type=str, action='append')
+
     def get(self):
+        args = self.parser.parse_args()
+        print(args)
         agencies = Agency.query.all()
         if len(agencies) == 0:
             raise NotFoundError(message='No Entry Found')
@@ -60,11 +77,16 @@ class AgenciesResource(Resource):
         upperLimit = int(data.get('upperLimit'))
         lowerLimit = int(data.get('lowerLimit'))
 
+        rounds = data.get('rounds')
+
+
         agency = Agency(name, fullname, nickname, website, capitalType, 
                 capitalProperty, stageProperty, upperLimit, lowerLimit)
 
+        _rounds = Round.query.filter(Round.id.in_(rounds)).all()
+
+        agency.rounds.extend(_rounds)
+
         Agency.add_entry(agency, True)
-        #payload = dict(id=agency.id)
-        resp = utils.generate_resp(200)
-        return resp
+        return jsonify(agency.serialize())
 

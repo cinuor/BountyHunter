@@ -9,6 +9,12 @@ agencyrounds = db.Table(
         db.Column('round_id', db.String(36), db.ForeignKey('round.id'), primary_key=True)
     )
 
+agencyinveststages = db.Table(
+        'agencyinveststages',
+        db.Column('agency_id', db.String(36), db.ForeignKey('agency.id'), primary_key=True),
+        db.Column('investstage_id', db.String(36), db.ForeignKey('investstage.id'), primary_key=True)
+    )
+
 class Agency(db.Model, BaseModel):
     __tablename__ = 'agency'
     id = db.Column(db.String(36), primary_key=True, nullable=False)
@@ -21,8 +27,12 @@ class Agency(db.Model, BaseModel):
     stageProperty = db.Column(db.String(20), nullable=False)
     upperLimit = db.Column(db.Integer, nullable=False)
     lowerLimit = db.Column(db.Integer, nullable=False)
-    rounds = db.relationship('Round', secondary=agencyrounds, lazy='dynamic', 
-            backref=db.backref('agencys', lazy='dynamic'))
+
+    rounds = db.relationship('Round', secondary=agencyrounds, lazy='select', 
+            backref=db.backref('agency', lazy='dynamic'))
+    investStages = db.relationship('InvestStage', secondary=agencyinveststages, lazy='dynamic',
+            backref = db.backref('agency', lazy='dynamic'))
+
 
     def __init__(self, name, fullname, nickname, website, capitalType,
             capitalProperty, stageProperty, upperLimit, lowerLimit):
