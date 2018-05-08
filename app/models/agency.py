@@ -27,8 +27,9 @@ class Agency(db.Model, BaseModel):
     stageProperty = db.Column(db.String(20), nullable=False)
     upperLimit = db.Column(db.Integer, nullable=False)
     lowerLimit = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.Text)
 
-    rounds = db.relationship('Round', secondary=agencyrounds, lazy='select', 
+    rounds = db.relationship('Round', secondary=agencyrounds, lazy='dynamic', 
             backref=db.backref('agency', lazy='dynamic'))
     investStages = db.relationship('InvestStage', secondary=agencyinveststages, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
@@ -61,5 +62,7 @@ class Agency(db.Model, BaseModel):
             'capitalProperty': self.capitalProperty,
             'stageProperty': self.stageProperty,
             'upperLimit': self.upperLimit,
-            'lowerLimit': self.lowerLimit
+            'lowerLimit': self.lowerLimit,
+            'description': self.description,
+            'rounds': [(_round.query.get(_round.id)).serialize() for _round in self.rounds]
             }

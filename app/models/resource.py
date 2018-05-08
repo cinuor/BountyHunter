@@ -34,3 +34,9 @@ class InvestStage(db.Model, BaseModel):
 
     def __repr__(self):
         return '<InvestStage %r>' % self.name
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name
+            } 
