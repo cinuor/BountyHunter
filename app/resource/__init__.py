@@ -8,5 +8,5 @@ resourcebp = Blueprint('resource', __name__)
 from .resource import *
 
 resource_api = Api(resourcebp)
-resource_api.add_resource(EntriesResource, '/resources')
-resource_api.add_resource(EntryResource, '/resources/<string:id>')
+resource_api.add_resource(EntriesResource, '/resource')
+resource_api.add_resource(EntryResource, '/resource/<string:id>')
