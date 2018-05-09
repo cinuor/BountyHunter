@@ -52,8 +52,6 @@ class AgenciesResource(Resource):
         args = self.parser.parse_args()
         print(args)
         agencies = Agency.query.all()
-        if len(agencies) == 0:
-            raise NotFoundError(message='No Entry Found')
         return jsonify([i.serialize() for i in agencies])
 
     def post(self):
