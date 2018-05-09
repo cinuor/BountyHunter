@@ -5,6 +5,11 @@ from ..models import db
 from .base import BaseModel
 from .. import utils
 
+__all__ = [
+        'Round', 'Investstage', 'Capitaltype', 'Capitalproperty', 
+        'Stageproperty', 'Area'
+    ]
+
 class ResourceBase(BaseModel):
 
     def __repr__(self):
@@ -65,3 +70,11 @@ class Stageproperty(db.Model, ResourceBase):
         self.id = utils.generate_uuid()
         self.name = name
 
+class Area(db.Model, ResourceBase):
+    __tablename__ = 'area'
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(10), unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.id = utils.generate_uuid()
+        self.name = name

@@ -15,6 +15,12 @@ agencyinveststages = db.Table(
         db.Column('investstage_id', db.String(36), db.ForeignKey('investstage.id'), primary_key=True)
     )
 
+agencyareas = db.Table(
+        'agencyareas',
+        db.Column('agency_id', db.String(36), db.ForeignKey('agency.id'), primary_key=True),
+        db.Column('area_id', db.String(36), db.ForeignKey('area.id'), primary_key=True)
+    )
+
 class Agency(db.Model, BaseModel):
     __tablename__ = 'agency'
     id = db.Column(db.String(36), primary_key=True, nullable=False)
@@ -32,6 +38,8 @@ class Agency(db.Model, BaseModel):
     rounds = db.relationship('Round', secondary=agencyrounds, lazy='dynamic', 
             backref=db.backref('agency', lazy='dynamic'))
     investstages = db.relationship('Investstage', secondary=agencyinveststages, lazy='dynamic',
+            backref = db.backref('agency', lazy='dynamic'))
+    areas = db.relationship('Area', secondary=agencyareas, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
 
 
@@ -65,5 +73,6 @@ class Agency(db.Model, BaseModel):
             'lowerLimit': self.lowerLimit,
             'description': self.description,
             'rounds': [(_round.query.get(_round.id)).serialize() for _round in self.rounds],
-            'investstages': [(_investstage.query.get(_investstage.id)).serialize() for _investstage in self.investstages]
+            'investstages': [(_investstage.query.get(_investstage.id)).serialize() for _investstage in self.investstages],
+            'area': [(_area.query.get(_area.id)).serialize() for _area in self.areas]
         }

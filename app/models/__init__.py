@@ -8,5 +8,5 @@ db = SQLAlchemy()
 from .agency import Agency
 #from .investor import Investor
 #from .industry import Industry
-from .resource import Round,Investstage
+from .resource import *
 #from .agencyround import AgencyRound
