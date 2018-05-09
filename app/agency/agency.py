@@ -4,7 +4,7 @@ import json
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
 from ..error import *
-from ..models import Agency, Round, Investstage, Area
+from ..models import Agency, Round, Investstage, Area, Currency
 from .. import utils
 
 class AgencyResource(Resource):
@@ -75,6 +75,7 @@ class AgenciesResource(Resource):
         rounds = data.get('rounds')
         investstages = data.get('investstages')
         areas = data.get('areas')
+        currencys = data.get('currencys')
 
         agency = Agency(name, fullname, nickname, website, capitalType, 
                 capitalProperty, stageProperty, upperLimit, lowerLimit)
@@ -82,6 +83,7 @@ class AgenciesResource(Resource):
         self._insert_round(agency, rounds)
         self._insert_investstage(agency, investstages)
         self._insert_area(agency, areas)
+        self._insert_currency(agency, currencys)
 
         Agency.add_entry(agency, True)
         return jsonify(agency.serialize())
@@ -109,3 +111,11 @@ class AgenciesResource(Resource):
             id_list = ", ".join(areas)
             raise NotFoundError(message="Resource %s Not Found" % id_list)
         agency.areas.extend(_areas)
+
+    def _insert_currency(self, agency, currencys):
+        assert isinstance(agency, Agency)
+        _currencys = Currency.query.filter(Currency.id.in_(currencys)).all()
+        if len(_areas) == 0:
+            id_list = ", ".join(areas)
+            raise NotFoundError(message="Resource %s Not Found" % id_list)
+        agency.currencys.extend(_areas)

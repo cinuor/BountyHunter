@@ -21,6 +21,13 @@ agencyareas = db.Table(
         db.Column('area_id', db.String(36), db.ForeignKey('area.id'), primary_key=True)
     )
 
+agencycurrencys = db.Table(
+        'agencycurrencys',
+        db.Column('agency_id', db.String(36), db.ForeignKey('agency.id'), primary_key=True),
+        db.Column('currency_id', db.String(36), db.ForeignKey('currency.id'), primary_key=True)
+    )
+
+
 class Agency(db.Model, BaseModel):
     __tablename__ = 'agency'
     id = db.Column(db.String(36), primary_key=True, nullable=False)
@@ -40,6 +47,8 @@ class Agency(db.Model, BaseModel):
     investstages = db.relationship('Investstage', secondary=agencyinveststages, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
     areas = db.relationship('Area', secondary=agencyareas, lazy='dynamic',
+            backref = db.backref('agency', lazy='dynamic'))
+    currencys = db.relationship('Currency', secondary=agencycurrencys, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
 
 
@@ -74,5 +83,6 @@ class Agency(db.Model, BaseModel):
             'description': self.description,
             'rounds': [(_round.query.get(_round.id)).serialize() for _round in self.rounds],
             'investstages': [(_investstage.query.get(_investstage.id)).serialize() for _investstage in self.investstages],
-            'area': [(_area.query.get(_area.id)).serialize() for _area in self.areas]
+            'areas': [(_area.query.get(_area.id)).serialize() for _area in self.areas],
+            'currencys': [(_currency.query.get(_currency.id)).serialize() for _currency in self.currencys]
         }
