@@ -7,7 +7,7 @@ from .. import utils
 
 __all__ = [
         'Round', 'Investstage', 'Capitaltype', 'Capitalproperty', 
-        'Stageproperty', 'Area', 'Currency'
+        'Stageproperty', 'Area', 'Currency', 'Tag'
     ]
 
 class ResourceBase(BaseModel):
@@ -81,6 +81,15 @@ class Area(db.Model, ResourceBase):
 
 class Currency(db.Model, ResourceBase):
     __tablename__ = 'currency'
+    id = db.Column(db.String(36), primary_key=True)
+    name = db.Column(db.String(10), unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.id = utils.generate_uuid()
+        self.name = name
+
+class Tag(db.Model, ResourceBase):
+    __tablename__ = 'tag'
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
