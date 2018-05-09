@@ -4,7 +4,7 @@ import json
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
 from ..error import *
-from ..models import Agency, Round
+from ..models import Agency, Round, Investstage
 from .. import utils
 
 class AgencyResource(Resource):
@@ -47,17 +47,6 @@ class AgenciesResource(Resource):
     parser = reqparse.RequestParser()
     for para in parameters:
         parser.add_argument(para, type=str, action='append')
-    #parser.add_argument('industry', type=str, action='append')
-    #parser.add_argument('segindustry', type=str, action='append')
-    #parser.add_argument('capitalType', type=str, action='append')
-    #parser.add_argument('capitalProperty', type=str, action='append')
-    #parser.add_argument('stageProperty', type=str, action='append')
-    #parser.add_argument('investStage', type=str, action='append')
-    #parser.add_argument('round', type=str, action='append')
-    #parser.add_argument('currency', type=str, action='append')
-    #parser.add_argument('area', type=str, action='append')
-    #parser.add_argument('investCount', type=str, action='append')
-    #parser.add_argument('tag', type=str, action='append')
 
     def get(self):
         args = self.parser.parse_args()
@@ -79,16 +68,18 @@ class AgenciesResource(Resource):
         capitalType = data.get('capitalType')
         capitalProperty = data.get('capitalProperty')
         stageProperty = data.get('stageProperty')
-        upperLimit = int(data.get('upperLimit'))
-        lowerLimit = int(data.get('lowerLimit'))
+        upperLimit = data.get('upperLimit')
+        lowerLimit = data.get('lowerLimit')
         description = data.get('description', None)
 
         rounds = data.get('rounds')
+        investstages = data.get('investstages')
 
         agency = Agency(name, fullname, nickname, website, capitalType, 
                 capitalProperty, stageProperty, upperLimit, lowerLimit)
 
         self._insert_round(agency, rounds)
+        self._insert_investstage(agency, investstages)
 
         Agency.add_entry(agency, True)
         return jsonify(agency.serialize())
@@ -96,4 +87,15 @@ class AgenciesResource(Resource):
     def _insert_round(self, agency, rounds):
         assert isinstance(agency, Agency)
         _rounds = Round.query.filter(Round.id.in_(rounds)).all()
+        if len(_rounds) == 0:
+            id_list = ", ".join(rounds)
+            raise NotFoundError(message="Resource %s Not Found" % id_list)
         agency.rounds.extend(_rounds)
+
+    def _insert_investstage(self, agency, investstages):
+        assert isinstance(agency, Agency)
+        _investstages = Investstage.query.filter(Investstage.id.in_(investstages)).all()
+        if len(_investstages) == 0:
+            id_list = ", ".join(investstages)
+            raise NotFoundError(message="Resource %s Not Found" % id_list)
+        agency.investstages.extend(_investstages)

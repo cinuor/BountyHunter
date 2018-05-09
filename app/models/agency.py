@@ -31,7 +31,7 @@ class Agency(db.Model, BaseModel):
 
     rounds = db.relationship('Round', secondary=agencyrounds, lazy='dynamic', 
             backref=db.backref('agency', lazy='dynamic'))
-    investStages = db.relationship('Investstage', secondary=agencyinveststages, lazy='dynamic',
+    investstages = db.relationship('Investstage', secondary=agencyinveststages, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
 
 
@@ -64,5 +64,6 @@ class Agency(db.Model, BaseModel):
             'upperLimit': self.upperLimit,
             'lowerLimit': self.lowerLimit,
             'description': self.description,
-            'rounds': [(_round.query.get(_round.id)).serialize() for _round in self.rounds]
-            }
+            'rounds': [(_round.query.get(_round.id)).serialize() for _round in self.rounds],
+            'investstages': [(_investstage.query.get(_investstage.id)).serialize() for _investstage in self.investstages]
+        }
