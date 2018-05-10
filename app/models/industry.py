@@ -25,6 +25,14 @@ class Industry(db.Model, BaseModel):
     def __repr__(self):
         return '<Industry %r>' % self.name if self.industyType == 1 else '<SegmentIndustry %r>' % self.name
 
+    def serialize(self):
+        return {
+                "id": self.id,
+                "name": self.name,
+                "parentId": self.parentId,
+                "industyType": self.industyType
+            }
+
 
 #class SegmentIndustry(db.Model, BaseModel):
 #    id = db.Column(db.String(36), primary_key=True, nullable=False)

@@ -33,6 +33,12 @@ agencytags = db.Table(
         db.Column('tag_id', db.String(36), db.ForeignKey('tag.id'), primary_key=True)
     )
 
+agencyindustrys = db.Table(
+        'agencyindustrys',
+        db.Column('agency_id', db.String(36), db.ForeignKey('agency.id'), primary_key=True),
+        db.Column('industry_id', db.String(36), db.ForeignKey('industry.id'), primary_key=True)
+    )
+
 
 class Agency(db.Model, BaseModel):
     __tablename__ = 'agency'
@@ -57,6 +63,8 @@ class Agency(db.Model, BaseModel):
     currencys = db.relationship('Currency', secondary=agencycurrencys, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
     tags = db.relationship('Tag', secondary=agencytags, lazy='dynamic',
+            backref = db.backref('agency', lazy='dynamic'))
+    industrys = db.relationship('Industry', secondary=agencyindustrys, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
 
     def __init__(self, name, fullname, nickname, website, capitalType,
@@ -92,5 +100,6 @@ class Agency(db.Model, BaseModel):
             'investstages': [(_investstage.query.get(_investstage.id)).serialize() for _investstage in self.investstages],
             'areas': [(_area.query.get(_area.id)).serialize() for _area in self.areas],
             'currencys': [(_currency.query.get(_currency.id)).serialize() for _currency in self.currencys],
+            'industrys': [(_industry.query.get(_industry.id)).serialize() for _industry in self.industrys],
             'tags': [(_tag.query.get(_tag.id)).serialize() for _tag in self.tags]
         }

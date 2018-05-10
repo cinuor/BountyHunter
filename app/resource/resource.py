@@ -5,6 +5,7 @@ from flask import request, jsonify
 from flask_restful import Resource, reqparse
 from ..error import *
 from ..models import resource
+from ..models import Industry
 from .. import utils
 
 parser = reqparse.RequestParser()
