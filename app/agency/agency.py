@@ -74,6 +74,7 @@ class AgenciesResource(Resource):
         investstages = data.get('investstages')
         areas = data.get('areas')
         currencys = data.get('currencys')
+        # TODO:add industry
 
         agency = Agency(name, fullname, nickname, website, capitalType, 
                 capitalProperty, stageProperty, upperLimit, lowerLimit)

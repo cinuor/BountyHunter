@@ -63,9 +63,14 @@ class EntryResource(Resource):
         return jsonify(entry.serialize())
 
     def put(self, id):
+        data = utils.get_data(request)
+        if not data:
+            raise BadRequestError(message='No Payload')
+
         try:
             args = parser.parse_args()
             resourceType = args['type']
+            name = data['name']
             entry_class = getattr(resource, string.capwords(resourceType))
         except KeyError:
             raise BadRequestError(message='No Such Resource')

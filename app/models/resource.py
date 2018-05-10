@@ -106,7 +106,7 @@ class Industry(db.Model, BaseModel):
     __tablename__ = 'industry'
     id = db.Column(db.String(36), primary_key=True, nullable=False)
     name = db.Column(db.String(16), unique=True, nullable=False)
-    parentId = db.Column(db.String(36), unique=True, index=True)
+    parentId = db.Column(db.String(36), unique=False, index=True)
     industryType = db.Column(db.Enum(IndustryEnum), nullable=False)
 
     def __init__(self, name, parentId, industryType):
