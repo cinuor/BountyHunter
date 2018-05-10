@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import string
+import enum
 from ..models import db
 from .base import BaseModel
 from .. import utils
@@ -97,7 +98,7 @@ class Tag(db.Model, ResourceBase):
         self.id = utils.generate_uuid()
         self.name = name
 
-class IndustyEnum(enum.Enum):
+class IndustryEnum(enum.Enum):
     Industry = 1
     SegmentIndustry = 2
 
@@ -106,21 +107,21 @@ class Industry(db.Model, BaseModel):
     id = db.Column(db.String(36), primary_key=True, nullable=False)
     name = db.Column(db.String(16), unique=True, nullable=False)
     parentId = db.Column(db.String(36), unique=True, index=True)
-    industyType = db.Column(db.Enum(IndustyEnum), nullable=False)
+    industryType = db.Column(db.Enum(IndustryEnum), nullable=False)
 
-    def __init__(self, name, parentId, industyType):
+    def __init__(self, name, parentId, industryType):
         self.id = utils.generate_uuid()
         self.name = name
         self.parentId = parentId
-        self.industyType = industyType
+        self.industryType = industryType
 
     def __repr__(self):
-        return '<Industry %r>' % self.name if self.industyType == 1 else '<SegmentIndustry %r>' % self.name
+        return '<Industry %r>' % self.name if self.industryType == 1 else '<SegmentIndustry %r>' % self.name
 
     def serialize(self):
         return {
                 "id": self.id,
                 "name": self.name,
                 "parentId": self.parentId,
-                "industyType": self.industyType
+                "industryType": self.industryType.value
             }

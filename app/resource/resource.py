@@ -31,12 +31,18 @@ class EntriesResource(Resource):
             resourceType = data['type']
             name = data['name']
             entry_class = getattr(resource, string.capwords(resourceType))
+
+            if resourceType.lower() == 'industry':
+                parentId = data.get('parentId', None)
+                industryType = data['industryType']
         except KeyError:
             raise BadRequestError(message='No Such Resource')
 
-        print(entry_class)
+        if resourceType.lower() == 'industry':
+            entry = entry_class(name, parentId, industryType)
+        else:
+            entry = entry_class(name)
 
-        entry = entry_class(name)
         entry_class.add_entry(entry, True)
         return jsonify(entry.serialize())
 

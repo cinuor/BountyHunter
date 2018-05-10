@@ -9,5 +9,5 @@ from .agency import Agency
 #from .investor import Investor
 #from .industry import Industry
 from .resource import *
-from .industry import Industry
+#from .industry import Industry
 #from .agencyround import AgencyRound
