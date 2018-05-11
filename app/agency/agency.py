@@ -46,17 +46,17 @@ class AgenciesResource(Resource):
 #            'capitalProperty', 'stageProperty', 'investStage',
 #            'round', 'currency', 'area', 'investCount', 'tag']
     parameters = [
-        ('industry', True),
-        ('segindustry', True),
-        ('capitalType', True),
-        ('capitalProperty', True),
-        ('stageProperty', True),
-        ('investStage', True),
-        ('rounds', True),
-        ('currencys', True),
-        ('areas', True),
-        ('investCount', True),
-        ('tags', True)
+        ('industry',        False),
+        ('segindustry',     False),
+        ('capitalType',     False),
+        ('capitalProperty', False),
+        ('stageProperty',   False),
+        ('investStage',     False),
+        ('round',           False),
+        ('currency',        False),
+        ('area',            False),
+        ('investCount',     False),
+        ('tag',             False)
     ]
     parser = reqparse.RequestParser()
     for para in parameters:
@@ -66,13 +66,17 @@ class AgenciesResource(Resource):
         args = self.parser.parse_args()
         print(args)
         agencies = Agency.query.all()
-        return jsonify([i.serialize() for i in agencies])
+        return jsonify([i.serialize_simple() for i in agencies])
 
     def post(self):
         data = utils.get_data(request)
         if not data:
             raise BadRequestError(message="No Payload")
 
+        try:
+            pass
+        except KeyError:
+            raise BadRequestError(message="No Enough ")
         name = data.get('name')
         fullname = data.get('fullname', None)
         nickname = data.get('nickname', None)
@@ -153,7 +157,7 @@ class AgenciesResource(Resource):
         if len(_industrys) == 0:
             id_list = ", ".join(industrys)
             raise NotFoundError(message="Resource %s Not Found" % id_list)
-        agency.currencys.extend(_industrys)
+        agency.industrys.extend(_industrys)
 
     def _insert_tag(self, agency, tags):
         if not tags:
@@ -163,4 +167,4 @@ class AgenciesResource(Resource):
         if len(_tags) == 0:
             id_list = ", ".join(tags)
             raise NotFoundError(message="Resource %s Not Found" % id_list)
-        agency.currencys.extend(_tags)
+        agency.tags.extend(_tags)

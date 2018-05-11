@@ -103,3 +103,18 @@ class Agency(db.Model, BaseModel):
             'industrys': [(_industry.query.get(_industry.id)).serialize() for _industry in self.industrys],
             'tags': [(_tag.query.get(_tag.id)).serialize() for _tag in self.tags]
         }
+
+    def serialize_simple(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'fullname': self.fullname,
+            'nickname': self.nickname,
+            'website': self.website,
+            'capitalType': self.capitalType,
+            'capitalProperty': self.capitalProperty,
+            'stageProperty': self.stageProperty,
+            'upperLimit': self.upperLimit,
+            'lowerLimit': self.lowerLimit,
+            'description': self.description
+        }
