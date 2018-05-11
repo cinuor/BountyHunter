@@ -4,7 +4,8 @@ import json
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
 from ..error import *
-from ..models import Agency, Round, Investstage, Area, Currency
+from ..models import Agency, Round, Investstage,\
+        Area, Currency, Industry,Tag
 from .. import utils
 
 class AgencyResource(Resource):
@@ -41,12 +42,25 @@ class AgencyResource(Resource):
 
 class AgenciesResource(Resource):
 
-    parameters = ['industry', 'segindustry', 'capitalType', 
-            'capitalProperty', 'stageProperty', 'investStage',
-            'round', 'currency', 'area', 'investCount', 'tag']
+#    parameters = ['industry', 'segindustry', 'capitalType', 
+#            'capitalProperty', 'stageProperty', 'investStage',
+#            'round', 'currency', 'area', 'investCount', 'tag']
+    parameters = [
+        ('industry', True),
+        ('segindustry', True),
+        ('capitalType', True),
+        ('capitalProperty', True),
+        ('stageProperty', True),
+        ('investStage', True),
+        ('rounds', True),
+        ('currencys', True),
+        ('areas', True),
+        ('investCount', True),
+        ('tags', True)
+    ]
     parser = reqparse.RequestParser()
     for para in parameters:
-        parser.add_argument(para, type=str, action='append')
+        parser.add_argument(para[0], type=str, action='append', required=para[1])
 
     def get(self):
         args = self.parser.parse_args()
@@ -70,11 +84,12 @@ class AgenciesResource(Resource):
         lowerLimit = data.get('lowerLimit')
         description = data.get('description', None)
 
-        rounds = data.get('rounds')
-        investstages = data.get('investstages')
-        areas = data.get('areas')
-        currencys = data.get('currencys')
-        # TODO:add industry
+        rounds = data.get('rounds', None)
+        investstages = data.get('investstages', None)
+        areas = data.get('areas', None)
+        currencys = data.get('currencys', None)
+        industrys = data.get('industrys', None)
+        tags = data.get('tags', None)
 
         agency = Agency(name, fullname, nickname, website, capitalType, 
                 capitalProperty, stageProperty, upperLimit, lowerLimit)
@@ -83,11 +98,16 @@ class AgenciesResource(Resource):
         self._insert_investstage(agency, investstages)
         self._insert_area(agency, areas)
         self._insert_currency(agency, currencys)
+        self._insert_industry(agency, industrys)
+        self._insert_tag(agency, tags)
+
 
         Agency.add_entry(agency, True)
         return jsonify(agency.serialize())
 
     def _insert_round(self, agency, rounds):
+        if not rounds:
+            return
         assert isinstance(agency, Agency)
         _rounds = Round.query.filter(Round.id.in_(rounds)).all()
         if len(_rounds) == 0:
@@ -96,6 +116,8 @@ class AgenciesResource(Resource):
         agency.rounds.extend(_rounds)
 
     def _insert_investstage(self, agency, investstages):
+        if not investstages:
+            return
         assert isinstance(agency, Agency)
         _investstages = Investstage.query.filter(Investstage.id.in_(investstages)).all()
         if len(_investstages) == 0:
@@ -104,6 +126,8 @@ class AgenciesResource(Resource):
         agency.investstages.extend(_investstages)
 
     def _insert_area(self, agency, areas):
+        if not areas:
+            return
         assert isinstance(agency, Agency)
         _areas = Area.query.filter(Area.id.in_(areas)).all()
         if len(_areas) == 0:
@@ -112,9 +136,31 @@ class AgenciesResource(Resource):
         agency.areas.extend(_areas)
 
     def _insert_currency(self, agency, currencys):
+        if not currencys:
+            return
         assert isinstance(agency, Agency)
         _currencys = Currency.query.filter(Currency.id.in_(currencys)).all()
-        if len(_areas) == 0:
+        if len(_currencys) == 0:
             id_list = ", ".join(areas)
             raise NotFoundError(message="Resource %s Not Found" % id_list)
-        agency.currencys.extend(_areas)
+        agency.currencys.extend(_currencys)
+
+    def _insert_industry(self, agency, industrys):
+        if not industrys:
+            return
+        assert isinstance(agency, Agency)
+        _industrys = Industry.query.filter(Industry.id.in_(industrys)).all()
+        if len(_industrys) == 0:
+            id_list = ", ".join(industrys)
+            raise NotFoundError(message="Resource %s Not Found" % id_list)
+        agency.currencys.extend(_industrys)
+
+    def _insert_tag(self, agency, tags):
+        if not tags:
+            return
+        assert isinstance(agency, Agency)
+        _tags = Tag.query.filter(Tag.id.in_(tags)).all()
+        if len(_tags) == 0:
+            id_list = ", ".join(tags)
+            raise NotFoundError(message="Resource %s Not Found" % id_list)
+        agency.currencys.extend(_tags)

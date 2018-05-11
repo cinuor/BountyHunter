@@ -24,11 +24,12 @@ class EntriesResource(Resource):
         return [entry.serialize() for entry in entries]
 
     def post(self):
+        args = parser.parse_args()
         data = utils.get_data(request)
         if not data:
             raise BadRequestError(message='No Payload')
         try:
-            resourceType = data['type']
+            resourceType = args['type']
             name = data['name']
             entry_class = getattr(resource, string.capwords(resourceType))
 
