@@ -3,9 +3,10 @@
 import json
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
+from sqlalchemy import text
 from ..error import *
 from ..models import Agency, Round, Investstage,\
-        Area, Currency, Industry,Tag
+        Area, Currency, Industry,Tag, db
 from .. import utils
 
 class AgencyResource(Resource):
@@ -65,6 +66,18 @@ class AgenciesResource(Resource):
     def get(self):
         args = self.parser.parse_args()
         print(args)
+        connection = self._create_db_connection()
+        trans = self._create_db_trans(connection)
+        try:
+            industry_agencies = self.get_agencies_from_entries(connection, 
+                    'agencyindustrys', 'industry_id', args['industry'])
+
+            trans.commit()
+        except:
+            trans.rollback()
+            raise ServerError(message="Database Error")
+
+        print(industry_agencies)
         agencies = Agency.query.all()
         return jsonify([i.serialize_simple() for i in agencies])
 
@@ -74,18 +87,18 @@ class AgenciesResource(Resource):
             raise BadRequestError(message="No Payload")
 
         try:
-            pass
+            name = data['name']
+            capitalType = data['capitalType']
+            capitalProperty = data['capitalProperty']
+            stageProperty = data['stageProperty']
+            upperLimit = data['upperLimit']
+            lowerLimit = data['lowerLimit']
         except KeyError:
-            raise BadRequestError(message="No Enough ")
-        name = data.get('name')
+            raise BadRequestError(message="No Enough Parameter")
+
         fullname = data.get('fullname', None)
         nickname = data.get('nickname', None)
         website = data.get('website', None)
-        capitalType = data.get('capitalType')
-        capitalProperty = data.get('capitalProperty')
-        stageProperty = data.get('stageProperty')
-        upperLimit = data.get('upperLimit')
-        lowerLimit = data.get('lowerLimit')
         description = data.get('description', None)
 
         rounds = data.get('rounds', None)
@@ -168,3 +181,15 @@ class AgenciesResource(Resource):
             id_list = ", ".join(tags)
             raise NotFoundError(message="Resource %s Not Found" % id_list)
         agency.tags.extend(_tags)
+
+    def _create_db_connection(self):
+        global db
+        return db.engine.connect()
+
+    def _create_db_trans(self, connection):
+        return connection.begin()
+
+    def get_agencies_from_entries(self, connection, table, column, entries):
+        sql = "SELECT agency_id FROM {0} WHERE {1} in :ids".format(table, column)
+        rows = connection.execute(text(sql), ids = tuple(entries)).fetchall()
+        return [row[0] for row in rows]
