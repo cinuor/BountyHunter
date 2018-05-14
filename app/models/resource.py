@@ -25,77 +25,69 @@ class ResourceBase(BaseModel):
 
 class Round(db.Model, ResourceBase):
     __tablename__ = 'round'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 
 class Investstage(db.Model, ResourceBase):
     __tablename__ = 'investstage'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 
 class Capitaltype(db.Model, ResourceBase):
     __tablename__ = 'capitaltype'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 class Capitalproperty(db.Model, ResourceBase):
     __tablename__ = 'capitalproperty'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 
 class Stageproperty(db.Model, ResourceBase):
     __tablename__ = 'stageproperty'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 class Area(db.Model, ResourceBase):
     __tablename__ = 'area'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 class Currency(db.Model, ResourceBase):
     __tablename__ = 'currency'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 class Tag(db.Model, ResourceBase):
     __tablename__ = 'tag'
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
 
     def __init__(self, name):
-        self.id = utils.generate_uuid()
         self.name = name
 
 class IndustryEnum(enum.Enum):
@@ -104,13 +96,12 @@ class IndustryEnum(enum.Enum):
 
 class Industry(db.Model, BaseModel):
     __tablename__ = 'industry'
-    id = db.Column(db.String(36), primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(16), unique=True, nullable=False)
-    parentId = db.Column(db.String(36), unique=False, index=True)
+    parentId = db.Column(db.Integer, unique=False, index=True)
     industryType = db.Column(db.Enum(IndustryEnum), nullable=False)
 
     def __init__(self, name, parentId, industryType):
-        self.id = utils.generate_uuid()
         self.name = name
         self.parentId = parentId
         self.industryType = industryType

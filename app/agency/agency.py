@@ -74,6 +74,7 @@ class AgenciesResource(Resource):
         capitaltype = tuple(args['capitaltype']) if args['capitaltype'] else None
         capitalproperty = tuple(args['capitalproperty']) if args['capitalproperty'] else None
         stageproperty = tuple(args['stageproperty']) if args['stageproperty'] else None
+        currency = tuple(args['currency']) if args['currency'] else None
         investcount = int(args['investcount'][0]) if args['investcount'] else None
 
 
@@ -86,8 +87,8 @@ class AgenciesResource(Resource):
                     'agencyinveststages', 'investstage_id', args['investstage'])
             round_agencies = self.get_agencies_from_entries(connection, 
                     'agencyrounds', 'round_id', args['round'])
-            currency_agencies = self.get_agencies_from_entries(connection, 
-                    'agencycurrencys', 'currency_id', args['currency'])
+            #currency_agencies = self.get_agencies_from_entries(connection, 
+            #        'agencycurrencys', 'currency_id', args['currency'])
             area_agencies = self.get_agencies_from_entries(connection, 
                     'agencyareas', 'area_id', args['area'])
             tag_agencies = self.get_agencies_from_entries(connection,
@@ -109,7 +110,7 @@ class AgenciesResource(Resource):
         agency_ids.append(industry_agencies)
         agency_ids.append(investstage_agencies)
         agency_ids.append(round_agencies)
-        agency_ids.append(currency_agencies)
+        #agency_ids.append(currency_agencies)
         agency_ids.append(area_agencies)
         agency_ids.append(tag_agencies)
 
@@ -126,6 +127,8 @@ class AgenciesResource(Resource):
             query = query.filter(Agency.capitalProperty.in_(capitalProperty))
         if stageproperty:
             query = query.filter(Agency.stageProperty.in_(stageproperty))
+        if currency:
+            query = query.filter(Agency.currency.in_(currency))
         if investcount:
             query = query.filter(Agency.lowerLimit <= investcount)
             query = query.filter(Agency.upperLimit >= investcount)
@@ -150,6 +153,7 @@ class AgenciesResource(Resource):
             capitalType = data['capitalType']
             capitalProperty = data['capitalProperty']
             stageProperty = data['stageProperty']
+            currency = data['currency']
             upperLimit = data['upperLimit']
             lowerLimit = data['lowerLimit']
         except KeyError:
@@ -163,17 +167,16 @@ class AgenciesResource(Resource):
         rounds = data.get('rounds', None)
         investstages = data.get('investstages', None)
         areas = data.get('areas', None)
-        currencys = data.get('currencys', None)
         industrys = data.get('industrys', None)
         tags = data.get('tags', None)
 
         agency = Agency(name, fullname, nickname, website, capitalType, 
-                capitalProperty, stageProperty, upperLimit, lowerLimit)
+                capitalProperty, currency, stageProperty, upperLimit, lowerLimit)
 
         self._insert_round(agency, rounds)
         self._insert_investstage(agency, investstages)
         self._insert_area(agency, areas)
-        self._insert_currency(agency, currencys)
+        #self._insert_currency(agency, currencys)
         self._insert_industry(agency, industrys)
         self._insert_tag(agency, tags)
 
@@ -211,15 +214,15 @@ class AgenciesResource(Resource):
             raise NotFoundError(message="Resource %s Not Found" % id_list)
         agency.areas.extend(_areas)
 
-    def _insert_currency(self, agency, currencys):
-        if not currencys:
-            return
-        assert isinstance(agency, Agency)
-        _currencys = Currency.query.filter(Currency.id.in_(currencys)).all()
-        if len(_currencys) == 0:
-            id_list = ", ".join(areas)
-            raise NotFoundError(message="Resource %s Not Found" % id_list)
-        agency.currencys.extend(_currencys)
+#   def _insert_currency(self, agency, currencys):
+#       if not currencys:
+#           return
+#       assert isinstance(agency, Agency)
+#       _currencys = Currency.query.filter(Currency.id.in_(currencys)).all()
+#       if len(_currencys) == 0:
+#           id_list = ", ".join(areas)
+#           raise NotFoundError(message="Resource %s Not Found" % id_list)
+#       agency.currencys.extend(_currencys)
 
     def _insert_industry(self, agency, industrys):
         if not industrys:
