@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import json
+from functools import reduce
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
 from sqlalchemy import text
 from ..error import *
+from sqlalchemy.exc import IntegrityError as SQLIntegrityError
 from ..models import Agency, Round, Investstage,\
         Area, Currency, Industry,Tag, db
 from .. import utils
@@ -47,16 +49,17 @@ class AgenciesResource(Resource):
 #            'capitalProperty', 'stageProperty', 'investStage',
 #            'round', 'currency', 'area', 'investCount', 'tag']
     parameters = [
+        ('name',            False),
         ('industry',        False),
         ('segindustry',     False),
-        ('capitalType',     False),
-        ('capitalProperty', False),
-        ('stageProperty',   False),
-        ('investStage',     False),
+        ('capitaltype',     False),
+        ('capitalproperty', False),
+        ('stageproperty',   False),
+        ('investstage',     False),
         ('round',           False),
         ('currency',        False),
         ('area',            False),
-        ('investCount',     False),
+        ('investcount',     False),
         ('tag',             False)
     ]
     parser = reqparse.RequestParser()
@@ -65,20 +68,76 @@ class AgenciesResource(Resource):
 
     def get(self):
         args = self.parser.parse_args()
-        print(args)
+        #print(args)
+
+        name = args['name'][0] if args['name'] else None
+        capitaltype = tuple(args['capitaltype']) if args['capitaltype'] else None
+        capitalproperty = tuple(args['capitalproperty']) if args['capitalproperty'] else None
+        stageproperty = tuple(args['stageproperty']) if args['stageproperty'] else None
+        investcount = int(args['investcount'][0]) if args['investcount'] else None
+
+
         connection = self._create_db_connection()
         trans = self._create_db_trans(connection)
         try:
             industry_agencies = self.get_agencies_from_entries(connection, 
                     'agencyindustrys', 'industry_id', args['industry'])
+            investstage_agencies = self.get_agencies_from_entries(connection,
+                    'agencyinveststages', 'investstage_id', args['investstage'])
+            round_agencies = self.get_agencies_from_entries(connection, 
+                    'agencyrounds', 'round_id', args['round'])
+            currency_agencies = self.get_agencies_from_entries(connection, 
+                    'agencycurrencys', 'currency_id', args['currency'])
+            area_agencies = self.get_agencies_from_entries(connection, 
+                    'agencyareas', 'area_id', args['area'])
+            tag_agencies = self.get_agencies_from_entries(connection,
+                    'agencytags', 'tag_id', args['tag'])
 
             trans.commit()
         except:
             trans.rollback()
             raise ServerError(message="Database Error")
 
-        print(industry_agencies)
-        agencies = Agency.query.all()
+        #print(industry_agencies)
+        #print(investstage_agencies)
+        #print(round_agencies)
+        #print(currency_agencies)
+        #print(area_agencies)
+        #print(tag_agencies)
+
+        agency_ids = list()
+        agency_ids.append(industry_agencies)
+        agency_ids.append(investstage_agencies)
+        agency_ids.append(round_agencies)
+        agency_ids.append(currency_agencies)
+        agency_ids.append(area_agencies)
+        agency_ids.append(tag_agencies)
+
+        result = tuple(reduce(lambda x,y: set(x) & set(y), agency_ids))
+        query = Agency.query
+        
+        if len(result) > 0:
+            query = query.filter(Agency.id.in_(result))
+        if name:
+            query = query.filter(Agency.name.like("%"+name+"%"))
+        if capitaltype:
+            query = query.filter(Agency.capitalType.in_(capitaltype))
+        if capitalproperty:
+            query = query.filter(Agency.capitalProperty.in_(capitalProperty))
+        if stageproperty:
+            query = query.filter(Agency.stageProperty.in_(stageproperty))
+        if investcount:
+            query = query.filter(Agency.lowerLimit <= investcount)
+            query = query.filter(Agency.upperLimit >= investcount)
+
+        agencies = query.all()
+
+        #def suit(investcount):
+        #    return lambda x: x.lowerLimit <= investcount \
+        #            and x.upperLimit >= investcount
+        
+        #agencies = filter(suit(investcount), agencies)
+
         return jsonify([i.serialize_simple() for i in agencies])
 
     def post(self):
@@ -190,6 +249,8 @@ class AgenciesResource(Resource):
         return connection.begin()
 
     def get_agencies_from_entries(self, connection, table, column, entries):
+        if not entries:
+            return []
         sql = "SELECT agency_id FROM {0} WHERE {1} in :ids".format(table, column)
         rows = connection.execute(text(sql), ids = tuple(entries)).fetchall()
         return [row[0] for row in rows]
