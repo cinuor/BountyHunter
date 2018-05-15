@@ -150,12 +150,12 @@ class AgenciesResource(Resource):
 
         try:
             name = data['name']
-            capitalType = data['capitalType']
-            capitalProperty = data['capitalProperty']
-            stageProperty = data['stageProperty']
+            capitalType = data['capitaltype']
+            capitalProperty = data['capitalproperty']
+            stageProperty = data['stageproperty']
             currency = data['currency']
-            upperLimit = data['upperLimit']
-            lowerLimit = data['lowerLimit']
+            upperLimit = data['upperlimit']
+            lowerLimit = data['lowerlimit']
         except KeyError:
             raise BadRequestError(message="No Enough Parameter")
 
