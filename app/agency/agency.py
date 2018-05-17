@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json
+import json, string
 from functools import reduce
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
@@ -9,6 +9,7 @@ from ..error import *
 from sqlalchemy.exc import IntegrityError as SQLIntegrityError
 from ..models import Agency, Round, Investstage,\
         Area, Currency, Industry,Tag, db
+from ..models import resource
 from .. import utils
 
 class AgencyResource(Resource):
@@ -257,3 +258,83 @@ class AgenciesResource(Resource):
         sql = "SELECT agency_id FROM {0} WHERE {1} in :ids".format(table, column)
         rows = connection.execute(text(sql), ids = tuple(entries)).fetchall()
         return [row[0] for row in rows]
+
+class AgencyProperty(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('type', type=str, required=True)
+
+    def put(self, id):
+        """
+        body:
+        {
+            'type': 'round',
+            'entries': [
+                'round_id_1',
+                'round_id_2',
+                'round_id_3'
+            ]
+        }
+        """
+
+        data = utils.get_data(request)
+        if not data:
+            raise BadRequestError(message='No Payload')
+
+        try:
+            resourceType = data['type']
+            id_list = data['entries']
+        except KeyError:
+            raise BadRequestError(message='Not Enough Parameter')
+
+        agency = Agency.query.get(id)
+        if not agency:
+            raise NotFoundError(message="Agency %s Not Found" % id)
+
+        try:
+            entry_class = getattr(resource, string.capwords(resourceType))
+            entries = entry_class.query.filter(entry_class.id.in_(id_list)).all()
+            if len(id_list) != len(entries):
+                raise BadRequestError(message='No Such Resource')
+        
+            resourceType = resourceType.lower() + 's'
+
+            agency_entries = getattr(agency, resourceType)
+            agency_entries.extend(entries)
+            db.session.commit()
+
+            resp = utils.generate_resp(200)
+            return resp
+        except KeyError:
+            raise BadRequestError(message='No Such Resource')
+        except:
+            raise
+
+    def delete(self, id, resourceId=None):
+
+        if not resourceId:
+            raise BadRequestError(message='Not Enough Parameter')
+
+        args = self.parser.parse_args()
+        resourceType = args['type']
+
+        tablename = 'agency'+resourceType.lower()+'s'
+        column = resourceType.lower()+'_id'
+
+        connection = self._create_db_connection()
+        sql = "DELETE FROM {0} WHERE agency_id={1} AND {2}={3}".format(tablename, id, column, resourceId)
+        print(sql)
+        try:
+            connection.execute(sql)
+        except:
+            raise
+        resp = utils.generate_resp(200)
+        return resp
+
+    def _create_db_connection(self):
+        global db
+        return db.engine.connect()
+
+    def _create_db_trans(self, connection):
+        return connection.begin()
+        

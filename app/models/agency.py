@@ -68,7 +68,6 @@ class Agency(db.Model, BaseModel):
 
     def __init__(self, name, fullname, nickname, website, capitalType,
             capitalProperty, stageProperty, currency, upperLimit, lowerLimit):
-        self.id = utils.generate_uuid()
         self.name = name
         self.fullname = fullname
         self.nickname = nickname
