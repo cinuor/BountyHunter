@@ -31,7 +31,7 @@ class AgencyResource(Resource):
         data = utils.get_data(request)
         if not data:
             raise BadRequestError(message="No Payload")
-        agency = Agency.query.filter_by(id=id).first()
+        agency = Agency.query.get(id)
         if not agency:
             raise NotFoundError(message='Resource %s Not Found' % id)
         for item in data.keys():
