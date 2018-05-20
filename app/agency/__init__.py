@@ -11,5 +11,5 @@ agency_api = Api(agencybp)
 agency_api.add_resource(AgenciesResource, '/agencies')
 agency_api.add_resource(AgencyResource, '/agencies/<string:id>')
 agency_api.add_resource(AgencyProperty, 
-        '/agencies/<string:id>/action', 
+        '/agencies/<string:id>/change', 
         '/agencies/<string:id>/delete/<string:resourceId>')
