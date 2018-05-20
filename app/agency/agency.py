@@ -292,6 +292,21 @@ class AgencyProperty(Resource):
             if not agency:
                 raise NotFoundError(message="Agency %s Not Found" % id)
 
+            if len(id_list) == 0:
+                tablename = 'agency'+resourceType.lower()+'s'
+                column = resourceType.lower()+'_id'
+
+                connection = self._create_db_connection()
+                sql = "DELETE FROM {0} WHERE agency_id={1} AND {2}={3}".format(tablename, id, column, resourceId)
+                print(sql)
+                try:
+                    connection.execute(sql)
+                except:
+                    raise
+                continue
+                #resp = utils.generate_resp(200)
+                #return resp
+
             try:
                 entry_class = getattr(resource, string.capwords(resourceType))
                 entries = entry_class.query.filter(entry_class.id.in_(id_list)).all()
