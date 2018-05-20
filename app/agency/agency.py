@@ -280,8 +280,8 @@ class AgencyProperty(Resource):
         data_list = utils.get_data(request)
         if not data_list:
             raise BadRequestError(message='No Payload')
-
-	for data in data_list:
+        
+        for data in data_list:
             try:
                 resourceType = data['type']
                 id_list = data['entries']
