@@ -92,7 +92,7 @@ class Agency(db.Model, BaseModel):
             'capitalType': self.capitalType,
             'capitalProperty': self.capitalProperty,
             'stageProperty': self.stageProperty,
-            'currencys': self.currency,
+            'currency': self.currency,
             'upperLimit': self.upperLimit,
             'lowerLimit': self.lowerLimit,
             'description': self.description,
