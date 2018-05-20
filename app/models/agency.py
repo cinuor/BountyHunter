@@ -97,7 +97,7 @@ class Agency(db.Model, BaseModel):
             'lowerLimit': self.lowerLimit,
             'description': self.description,
             'rounds': [(_round.query.get(_round.id)).serialize() for _round in self.rounds],
-            'investstages': [(_investstage.query.get(_investstage.id)).serialize() for _investstage in self.investstages],
+            'investStages': [(_investstage.query.get(_investstage.id)).serialize() for _investstage in self.investstages],
             'areas': [(_area.query.get(_area.id)).serialize() for _area in self.areas],
             'industrys': [(_industry.query.get(_industry.id)).serialize() for _industry in self.industrys],
             'tags': [(_tag.query.get(_tag.id)).serialize() for _tag in self.tags]
