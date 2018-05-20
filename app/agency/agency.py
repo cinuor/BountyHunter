@@ -277,38 +277,41 @@ class AgencyProperty(Resource):
         }
         """
 
-        data = utils.get_data(request)
-        if not data:
+        data_list = utils.get_data(request)
+        if not data_list:
             raise BadRequestError(message='No Payload')
 
-        try:
-            resourceType = data['type']
-            id_list = data['entries']
-        except KeyError:
-            raise BadRequestError(message='Not Enough Parameter')
+	for data in data_list:
+            try:
+                resourceType = data['type']
+                id_list = data['entries']
+            except KeyError:
+                raise BadRequestError(message='Not Enough Parameter')
 
-        agency = Agency.query.get(id)
-        if not agency:
-            raise NotFoundError(message="Agency %s Not Found" % id)
+            agency = Agency.query.get(id)
+            if not agency:
+                raise NotFoundError(message="Agency %s Not Found" % id)
 
-        try:
-            entry_class = getattr(resource, string.capwords(resourceType))
-            entries = entry_class.query.filter(entry_class.id.in_(id_list)).all()
-            if len(id_list) != len(entries):
-                raise BadRequestError(message='No Such Resource')
+            try:
+                entry_class = getattr(resource, string.capwords(resourceType))
+                entries = entry_class.query.filter(entry_class.id.in_(id_list)).all()
+                if len(id_list) != len(entries):
+                    raise BadRequestError(message='No Such Resource')
         
-            resourceType = resourceType.lower() + 's'
+                resourceType = resourceType.lower() + 's'
 
-            agency_entries = getattr(agency, resourceType)
-            agency_entries.extend(entries)
-            db.session.commit()
+                agency_entries = getattr(agency, resourceType)
+                agency_entries.extend(entries)
+                db.session.commit()
 
-            resp = utils.generate_resp(200)
-            return resp
-        except KeyError:
-            raise BadRequestError(message='No Such Resource')
-        except:
-            raise
+            except KeyError:
+                raise BadRequestError(message='No Such Resource')
+            except:
+                raise
+	
+        resp = utils.generate_resp(200)
+        return resp
+
 
     def delete(self, id, resourceId=None):
 
