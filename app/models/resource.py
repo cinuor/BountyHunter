@@ -7,8 +7,8 @@ from .base import BaseModel
 from .. import utils
 
 __all__ = [
-        'Round', 'Investstage', 'Capitaltype', 'Capitalproperty', 
-        'Stageproperty', 'Area', 'Currency', 'Tag', 'Industry'
+        'Round', 'InvestStage', 'CapitalType', 'CapitalProperty', 
+        'StageProperty', 'Area', 'Currency', 'Tag', 'Industry'
     ]
 
 class ResourceBase(BaseModel):

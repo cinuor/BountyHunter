@@ -7,7 +7,7 @@ from flask_restful import Resource, reqparse
 from sqlalchemy import text
 from ..error import *
 from sqlalchemy.exc import IntegrityError as SQLIntegrityError
-from ..models import Agency, Round, Investstage,\
+from ..models import Agency, Round, InvestStage,\
         Area, Currency, Industry,Tag, db
 from ..models import resource
 from .. import utils
@@ -192,7 +192,7 @@ class AgenciesResource(Resource):
         if not investstages:
             return
         assert isinstance(agency, Agency)
-        _investstages = Investstage.query.filter(Investstage.id.in_(investstages)).all()
+        _investstages = InvestStage.query.filter(InvestStage.id.in_(investstages)).all()
         if len(_investstages) == 0:
             id_list = ", ".join(investstages)
             raise NotFoundError(message="Resource %s Not Found" % id_list)
