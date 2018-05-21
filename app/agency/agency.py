@@ -98,6 +98,8 @@ class AgenciesResource(Resource):
         except:
             trans.rollback()
             raise ServerError(message="Database Error")
+        
+        print(tag_agencies)
 
         agency_ids = list()
         agency_ids.append(industry_agencies)
@@ -107,10 +109,11 @@ class AgenciesResource(Resource):
         agency_ids.append(area_agencies)
         agency_ids.append(tag_agencies)
 
-        result = tuple(reduce(lambda x,y: set(x) & set(y), agency_ids))
+        result = tuple(reduce(utils.get_unique, agency_ids))
+        print(result)
         query = Agency.query
         
-        if len(result) > 0:
+        if len(result) >= 0:
             query = query.filter(Agency.id.in_(result))
         if name:
             query = query.filter(Agency.name.like("%"+name+"%"))
@@ -316,7 +319,7 @@ class AgencyProperty(Resource):
         column = resourceType.lower()+'_id'
 
         connection = self._create_db_connection()
-        sql = "DELETE FROM {0} WHERE agency_id={1}".format(tablename, id)
+        sql = "DELETE FROM {0} WHERE agency_id={1}".format(tablename, agency_id)
         try:
             connection.execute(sql)
         except:

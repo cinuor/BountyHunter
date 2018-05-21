@@ -18,3 +18,8 @@ def capwords(words):
     result[0] = result[0].capitalize()
     return "".join(result)
 
+def get_unique(x, y):
+    if len(x) == 0:
+        return y
+    else:
+        return set(x) & set(y)
