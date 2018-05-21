@@ -13,3 +13,8 @@ def get_data(request):
         return None
     return json.loads(request.data)
 
+def capwords(words):
+    result = list(words)
+    result[0] = result[0].capitalize()
+    return "".join(result)
+

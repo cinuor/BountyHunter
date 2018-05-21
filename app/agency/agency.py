@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json, string
+import json
 from functools import reduce
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
@@ -52,15 +52,14 @@ class AgenciesResource(Resource):
     parameters = [
         ('name',            False),
         ('industry',        False),
-        ('segindustry',     False),
-        ('capitaltype',     False),
-        ('capitalproperty', False),
-        ('stageproperty',   False),
-        ('investstage',     False),
+        ('capitalType',     False),
+        ('capitalProperty', False),
+        ('stageProperty',   False),
+        ('investStage',     False),
         ('round',           False),
         ('currency',        False),
         ('area',            False),
-        ('investcount',     False),
+        ('investCount',     False),
         ('tag',             False)
     ]
     parser = reqparse.RequestParser()
@@ -165,7 +164,7 @@ class AgenciesResource(Resource):
         tags = data.get('tags', None)
 
         agency = Agency(name, fullname, nickname, website, capitalType, 
-                capitalProperty, currency, stageProperty, upperLimit, lowerLimit)
+                capitalProperty, stageProperty, currency, upperLimit, lowerLimit)
 
         self._insert_round(agency, rounds)
         self._insert_investstage(agency, investstages)
@@ -292,7 +291,7 @@ class AgencyProperty(Resource):
 
 
             try:
-                entry_class = getattr(resource, string.capwords(resourceType))
+                entry_class = getattr(resource, utils.capwords(resourceType))
                 entries = entry_class.query.filter(entry_class.id.in_(id_list)).all()
                 if len(id_list) != len(entries):
                     raise BadRequestError(message='No Such Resource')

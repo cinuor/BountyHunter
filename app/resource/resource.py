@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import string
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
 from ..error import *
@@ -16,7 +15,7 @@ class EntriesResource(Resource):
         args = parser.parse_args()
         resourceType = args['type']
         try:
-            entry_class = getattr(resource, string.capwords(resourceType))
+            entry_class = getattr(resource, utils.capwords(resourceType))
         except KeyError:
             return BadRequestError(message='No Such Resource')
 
@@ -31,7 +30,7 @@ class EntriesResource(Resource):
         try:
             resourceType = args['type']
             name = data['name']
-            entry_class = getattr(resource, string.capwords(resourceType))
+            entry_class = getattr(resource, utils.capwords(resourceType))
 
             if resourceType.lower() == 'industry':
                 parentId = data.get('parentId', None)
@@ -53,7 +52,7 @@ class EntryResource(Resource):
         try:
             args = parser.parse_args()
             resourceType = args['type']
-            entry_class = getattr(resource, string.capwords(resourceType))
+            entry_class = getattr(resource, utils.capwords(resourceType))
         except KeyError:
             raise BadRequestError(message='No Such Resource')
 
@@ -72,7 +71,7 @@ class EntryResource(Resource):
             args = parser.parse_args()
             resourceType = args['type']
             name = data['name']
-            entry_class = getattr(resource, string.capwords(resourceType))
+            entry_class = getattr(resource, utils.capwords(resourceType))
         except KeyError:
             raise BadRequestError(message='No Such Resource')
         
@@ -87,7 +86,7 @@ class EntryResource(Resource):
         try:
             args = parser.parse_args()
             resourceType = args['type']
-            entry_class = getattr(resource, string.capwords(resourceType))
+            entry_class = getattr(resource, utils.capwords(resourceType))
         except KeyError:
             raise BadRequestError(message='No Such Resource')
 
