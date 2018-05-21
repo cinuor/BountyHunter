@@ -163,8 +163,9 @@ class AgenciesResource(Resource):
         industrys = data.get('industrys', None)
         tags = data.get('tags', None)
 
-        agency = Agency(name, fullname, nickname, website, capitalType, 
-                capitalProperty, stageProperty, currency, upperLimit, lowerLimit)
+        agency = Agency(name, fullname, nickname, website, 
+                capitalType, capitalProperty, stageProperty, 
+                currency, upperLimit, lowerLimit, description)
 
         self._insert_round(agency, rounds)
         self._insert_investstage(agency, investstages)

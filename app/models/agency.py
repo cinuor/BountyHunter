@@ -67,7 +67,7 @@ class Agency(db.Model, BaseModel):
             backref = db.backref('agency', lazy='dynamic'))
 
     def __init__(self, name, fullname, nickname, website, capitalType,
-            capitalProperty, stageProperty, currency, upperLimit, lowerLimit):
+            capitalProperty, stageProperty, currency, upperLimit, lowerLimit, description):
         self.name = name
         self.fullname = fullname
         self.nickname = nickname
@@ -78,6 +78,7 @@ class Agency(db.Model, BaseModel):
         self.currency = currency
         self.upperLimit = upperLimit
         self.lowerLimit = lowerLimit
+        self.description = description
 
     def __repr__(self):
         return '<Agency %r>' % self.name
