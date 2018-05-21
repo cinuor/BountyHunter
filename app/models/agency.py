@@ -57,7 +57,7 @@ class Agency(db.Model, BaseModel):
 
     rounds = db.relationship('Round', secondary=agencyrounds, lazy='dynamic', 
             backref=db.backref('agency', lazy='dynamic'))
-    investstages = db.relationship('Investstage', secondary=agencyinveststages, lazy='dynamic',
+    investstages = db.relationship('InvestStage', secondary=agencyinveststages, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))
     areas = db.relationship('Area', secondary=agencyareas, lazy='dynamic',
             backref = db.backref('agency', lazy='dynamic'))

@@ -32,7 +32,7 @@ class Round(db.Model, ResourceBase):
         self.name = name
 
 
-class Investstage(db.Model, ResourceBase):
+class InvestStage(db.Model, ResourceBase):
     __tablename__ = 'investstage'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
@@ -41,7 +41,7 @@ class Investstage(db.Model, ResourceBase):
         self.name = name
 
 
-class Capitaltype(db.Model, ResourceBase):
+class CapitalType(db.Model, ResourceBase):
     __tablename__ = 'capitaltype'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
@@ -49,7 +49,7 @@ class Capitaltype(db.Model, ResourceBase):
     def __init__(self, name):
         self.name = name
 
-class Capitalproperty(db.Model, ResourceBase):
+class CapitalProperty(db.Model, ResourceBase):
     __tablename__ = 'capitalproperty'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)
@@ -58,7 +58,7 @@ class Capitalproperty(db.Model, ResourceBase):
         self.name = name
 
 
-class Stageproperty(db.Model, ResourceBase):
+class StageProperty(db.Model, ResourceBase):
     __tablename__ = 'stageproperty'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10), unique=True, nullable=False)

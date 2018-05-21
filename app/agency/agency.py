@@ -72,11 +72,11 @@ class AgenciesResource(Resource):
         #print(args)
 
         name = args['name'][0] if args['name'] else None
-        capitaltype = tuple(args['capitaltype']) if args['capitaltype'] else None
-        capitalproperty = tuple(args['capitalproperty']) if args['capitalproperty'] else None
-        stageproperty = tuple(args['stageproperty']) if args['stageproperty'] else None
+        capitaltype = tuple(args['capitalType']) if args['capitalType'] else None
+        capitalproperty = tuple(args['capitalProperty']) if args['capitalProperty'] else None
+        stageproperty = tuple(args['stageProperty']) if args['stageProperty'] else None
         currency = tuple(args['currency']) if args['currency'] else None
-        investcount = int(args['investcount'][0]) if args['investcount'] else None
+        investcount = int(args['investCount'][0]) if args['investCount'] else None
 
 
         connection = self._create_db_connection()
@@ -85,7 +85,7 @@ class AgenciesResource(Resource):
             industry_agencies = self.get_agencies_from_entries(connection, 
                     'agencyindustrys', 'industry_id', args['industry'])
             investstage_agencies = self.get_agencies_from_entries(connection,
-                    'agencyinveststages', 'investstage_id', args['investstage'])
+                    'agencyinveststages', 'investstage_id', args['investStage'])
             round_agencies = self.get_agencies_from_entries(connection, 
                     'agencyrounds', 'round_id', args['round'])
             #currency_agencies = self.get_agencies_from_entries(connection, 
@@ -99,13 +99,6 @@ class AgenciesResource(Resource):
         except:
             trans.rollback()
             raise ServerError(message="Database Error")
-
-        #print(industry_agencies)
-        #print(investstage_agencies)
-        #print(round_agencies)
-        #print(currency_agencies)
-        #print(area_agencies)
-        #print(tag_agencies)
 
         agency_ids = list()
         agency_ids.append(industry_agencies)
@@ -151,12 +144,12 @@ class AgenciesResource(Resource):
 
         try:
             name = data['name']
-            capitalType = data['capitaltype']
-            capitalProperty = data['capitalproperty']
-            stageProperty = data['stageproperty']
+            capitalType = data['capitalType']
+            capitalProperty = data['capitalProperty']
+            stageProperty = data['stageProperty']
             currency = data['currency']
-            upperLimit = data['upperlimit']
-            lowerLimit = data['lowerlimit']
+            upperLimit = data['upperLimit']
+            lowerLimit = data['lowerLimit']
         except KeyError:
             raise BadRequestError(message="No Enough Parameter")
 
@@ -166,7 +159,7 @@ class AgenciesResource(Resource):
         description = data.get('description', None)
 
         rounds = data.get('rounds', None)
-        investstages = data.get('investstages', None)
+        investstages = data.get('investStages', None)
         areas = data.get('areas', None)
         industrys = data.get('industrys', None)
         tags = data.get('tags', None)
@@ -288,24 +281,15 @@ class AgencyProperty(Resource):
             except KeyError:
                 raise BadRequestError(message='Not Enough Parameter')
 
+            self.remove_all(resourceType, id)
+
+            if len(id_list) == 0:
+                continue
+
             agency = Agency.query.get(id)
             if not agency:
                 raise NotFoundError(message="Agency %s Not Found" % id)
 
-            if len(id_list) == 0:
-                tablename = 'agency'+resourceType.lower()+'s'
-                column = resourceType.lower()+'_id'
-
-                connection = self._create_db_connection()
-                sql = "DELETE FROM {0} WHERE agency_id={1} AND {2}={3}".format(tablename, id, column, resourceId)
-                print(sql)
-                try:
-                    connection.execute(sql)
-                except:
-                    raise
-                continue
-                #resp = utils.generate_resp(200)
-                #return resp
 
             try:
                 entry_class = getattr(resource, string.capwords(resourceType))
@@ -327,6 +311,16 @@ class AgencyProperty(Resource):
         resp = utils.generate_resp(200)
         return resp
 
+    def remove_all(self, resourceType, agency_id):
+        tablename = 'agency'+resourceType.lower()+'s'
+        column = resourceType.lower()+'_id'
+
+        connection = self._create_db_connection()
+        sql = "DELETE FROM {0} WHERE agency_id={1}".format(tablename, id)
+        try:
+            connection.execute(sql)
+        except:
+            raise
 
     def delete(self, id, resourceId=None):
 
