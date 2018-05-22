@@ -113,7 +113,7 @@ class AgenciesResource(Resource):
         print(result)
         query = Agency.query
         
-        if len(result) >= 0:
+        if len(result) > 0:
             query = query.filter(Agency.id.in_(result))
         if name:
             query = query.filter(Agency.name.like("%"+name+"%"))
