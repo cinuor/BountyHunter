@@ -19,6 +19,7 @@ def capwords(words):
     return "".join(result)
 
 def get_unique(id_list):
+    print(id_list)
     if len(id_list) == 0:
         return tuple()
     result = set(id_list[0])
