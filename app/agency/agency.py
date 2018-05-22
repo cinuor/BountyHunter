@@ -114,7 +114,7 @@ class AgenciesResource(Resource):
         agency_ids.append(area_agencies)
         agency_ids.append(tag_agencies)
 
-        result = tuple(reduce(utils.get_unique, agency_ids))
+        result = utils.get_unique(agency_ids)
         print(result)
         query = Agency.query
         
