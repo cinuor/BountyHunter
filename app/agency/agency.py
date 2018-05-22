@@ -44,6 +44,7 @@ class AgencyResource(Resource):
                 item = item.lower()[:-1]
                 self.remove_all(item, id)
                 self.insert_all(item, ids, id)
+                continue
             setattr(agency, item, data[item])
         try:
             agency.commit()
