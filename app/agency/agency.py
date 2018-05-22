@@ -99,7 +99,12 @@ class AgenciesResource(Resource):
             trans.rollback()
             raise ServerError(message="Database Error")
         
+        print(industry_agencies)
+        print(investstage_agencies)
+        print(round_agencies)
+        print(area_agencies)
         print(tag_agencies)
+
 
         agency_ids = list()
         agency_ids.append(industry_agencies)
