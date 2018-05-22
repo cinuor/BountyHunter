@@ -12,6 +12,9 @@ from ..models import Agency, Round, InvestStage,\
 from ..models import resource
 from .. import utils
 
+MUTIL_PROPERTY = ['areas', 'investStages', 
+                'tags', 'industrys', 'rounds']
+
 class AgencyResource(Resource):
     def get(self, id):
         agency = Agency.query.filter_by(id=id).first()
@@ -28,6 +31,7 @@ class AgencyResource(Resource):
         return resp
 
     def put(self, id):
+        global MUTIL_PROPERTY
         data = utils.get_data(request)
         if not data:
             raise BadRequestError(message="No Payload")
@@ -35,6 +39,11 @@ class AgencyResource(Resource):
         if not agency:
             raise NotFoundError(message='Resource %s Not Found' % id)
         for item in data.keys():
+            if item in MUTIL_PROPERTY:
+                ids = data[item]
+                item = item.lower()[:-1]
+                self.remove_all(item, id)
+                self.insert_all(item, ids, id)
             setattr(agency, item, data[item])
         try:
             agency.commit()
@@ -42,6 +51,36 @@ class AgencyResource(Resource):
             raise BadRequestError(message="Duplicate Entry")
         resp = utils.generate_resp(200)
         return resp
+
+    def _create_db_connection(self):
+        global db
+        return db.engine.connect()
+
+    def remove_all(self, resourceType, agency_id):
+        tablename = 'agency'+resourceType.lower()+'s'
+        column = resourceType.lower()+'_id'
+
+        connection = self._create_db_connection()
+        sql = "DELETE FROM {0} WHERE agency_id={1}".format(tablename, agency_id)
+        try:
+            connection.execute(sql)
+        except:
+            raise
+
+    def insert_all(self, resourceType, ids, agency_id):
+        tablename = 'agency'+resourceType.lower()+'s'
+        column = resourceType.lower()+'_id'
+
+        connection = self._create_db_connection()
+
+        for property_id in ids:
+            sql = "INSERT INTO {0} (agency_id, {1}) VALUES ({2},{3})"\
+                    .format(tablename, column, agency_id, property_id)
+            print(sql)
+            try:
+                connection.execute(sql)
+            except:
+                raise
          
 
 class AgenciesResource(Resource):
