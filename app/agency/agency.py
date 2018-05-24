@@ -108,7 +108,7 @@ class AgenciesResource(Resource):
 
     def get(self):
         args = self.parser.parse_args()
-        #print(args)
+        print(args)
 
         name = args['name'][0] if args['name'] else None
         capitaltype = tuple(args['capitalType']) if args['capitalType'] else None
@@ -158,8 +158,6 @@ class AgenciesResource(Resource):
         print(result)
         query = Agency.query
         
-        if len(result) >= 0:
-            query = query.filter(Agency.id.in_(result))
         if name:
             query = query.filter(Agency.name.like("%"+name+"%"))
         if capitaltype:
@@ -173,6 +171,8 @@ class AgenciesResource(Resource):
         if investcount:
             query = query.filter(Agency.lowerLimit <= investcount)
             query = query.filter(Agency.upperLimit >= investcount)
+        if len(result) > 0:
+            query = query.filter(Agency.id.in_(result))
 
         agencies = query.all()
 
@@ -223,7 +223,10 @@ class AgenciesResource(Resource):
         self._insert_tag(agency, tags)
 
 
-        Agency.add_entry(agency, True)
+        try:
+            Agency.add_entry(agency, True)
+        except SQLIntegrityError:
+            raise BadRequestError(message='Duplicate Entry')
         return jsonify(agency.serialize())
 
     def _insert_round(self, agency, rounds):
