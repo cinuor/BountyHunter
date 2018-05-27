@@ -213,7 +213,6 @@ class AgenciesResource(Resource):
         tags = data.get('tags', None)
 
         try:
-            pass
             agency = Agency(name, fullname, nickname, website, 
                     capitalType, capitalProperty, stageProperty, 
                     currency, upperLimit, lowerLimit, description)
