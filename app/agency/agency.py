@@ -216,22 +216,16 @@ class AgenciesResource(Resource):
             agency = Agency(name, fullname, nickname, website, 
                     capitalType, capitalProperty, stageProperty, 
                     currency, upperLimit, lowerLimit, description)
+            self._insert_round(agency, rounds)
+            self._insert_investstage(agency, investstages)
+            self._insert_area(agency, areas)
+            #self._insert_currency(agency, currencys)
+            self._insert_industry(agency, industrys)
+            self._insert_tag(agency, tags)
+            Agency.add_entry(agency, True)
         except SQLIntegrityError:
             raise BadRequestError(message='Duplicate Entry')
 
-
-        self._insert_round(agency, rounds)
-        self._insert_investstage(agency, investstages)
-        self._insert_area(agency, areas)
-        #self._insert_currency(agency, currencys)
-        self._insert_industry(agency, industrys)
-        self._insert_tag(agency, tags)
-
-
-        try:
-            Agency.add_entry(agency, True)
-        except sqlalchemy.exc.IntegrityError:
-            raise BadRequestError(message='Duplicate Entry')
         return jsonify(agency.serialize())
 
     def _insert_round(self, agency, rounds):
