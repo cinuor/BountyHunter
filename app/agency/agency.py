@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import sqlalchemy
 from functools import reduce
 from flask import request, jsonify
 from flask_restful import Resource, reqparse
@@ -225,7 +226,7 @@ class AgenciesResource(Resource):
 
         try:
             Agency.add_entry(agency, True)
-        except SQLIntegrityError:
+        except sqlalchemy.exc.IntegrityError:
             raise BadRequestError(message='Duplicate Entry')
         return jsonify(agency.serialize())
 
